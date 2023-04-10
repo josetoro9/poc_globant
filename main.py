@@ -14,7 +14,31 @@ import glob
 import csv
 
 
-
+def inic_logger(path, namelog):
+    global logger
+    logger = logging.getLogger(namelog)
+    
+    directory = '/'.join([path, 'logs/'])
+    print(directory) 
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
+    # Verificar si el controlador ya está en la lista
+    if not any(isinstance(h, logging.FileHandler) and h.baseFilename == directory + namelog + '.log' for h in logger.handlers):
+        hdlr = logging.FileHandler(directory + namelog + '.log')
+        formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] [%(filename)s] :%(message)s')
+        hdlr.setFormatter(formatter)
+        logger.addHandler(hdlr) 
+    
+    logger.setLevel(logging.INFO)
+    
+def print_i(mensaje):
+    print(mensaje)
+    logger.info(mensaje)
+# end def
+def print_e(mensaje):
+    print(mensaje)
+    logger.error(mensaje)
 
 
 def title(csv_file):
@@ -24,9 +48,9 @@ def title(csv_file):
 def validate_data(csv_file,structure):
     try:
         df = pd.read_csv(csv_file, names=structure)
-        logging.info("Data for table {} is OK". format(title(csv_file)))
+        print_i("Data for table {} is OK". format(title(csv_file)))
     except:
-        logging.error("Failed to validate data for table {}". format(title(csv_file)))
+        print_e("Failed to validate data for table {}". format(title(csv_file)))
         df = pd.DataFrame(columns=structure)
     return df
 
@@ -44,15 +68,9 @@ def mysql_data(df,name,required_fields):
 path = os.path.dirname(os.path.abspath(__file__))
 os.chdir(path)
 
-# Configure logging
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s %(levelname)s %(message)s',
-    handlers=[
-        logging.FileHandler('myapp.log', mode='a'),
-        logging.StreamHandler()
-    ]
-)
+namelog = 'poc_globant'
+
+inic_logger(path, namelog)
 
 # Define the data dictionary rules for the tables
 data_dict = {
@@ -70,6 +88,7 @@ filtered_files = [file for file in files if '_mysql' not in file]
 #Reading and managing the data
 logging.info("Reading the data")
 for name in filtered_files:
+    print(name)
     required_fields = data_dict[title(name)]
     if title(name) == 'jobs':
         jobs = validate_data(name, required_fields)
@@ -97,17 +116,13 @@ for name in glob.glob(path + '/*_mysql.csv'):
             #To close sql alchemy connection
             engine.dispose()
     except:
-        logging.error("Failed to load data for table {}". format(table_name))
+        print_e("Failed to load data for table {}". format(table_name))
 
 
-logging.debug('This is a debug message')
-logging.info('This is an info message')
-logging.warning('This is a warning message')
-logging.error('This is an error message')
-logging.critical('This is a critical message')    
+ 
+
 
 logging.shutdown()
-
 
 
  

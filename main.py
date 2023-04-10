@@ -31,14 +31,6 @@ def inic_logger(path, namelog):
         logger.addHandler(hdlr) 
     
     logger.setLevel(logging.INFO)
-    
-def print_i(mensaje):
-    print(mensaje)
-    logger.info(mensaje)
-# end def
-def print_e(mensaje):
-    print(mensaje)
-    logger.error(mensaje)
 
 
 def title(csv_file):
@@ -48,9 +40,9 @@ def title(csv_file):
 def validate_data(csv_file,structure):
     try:
         df = pd.read_csv(csv_file, names=structure)
-        print_i("Data for table {} is OK". format(title(csv_file)))
+        logger.info("Data for table {} is OK". format(title(csv_file)))
     except:
-        print_e("Failed to validate data for table {}". format(title(csv_file)))
+        logger.error("Failed to validate data for table {}". format(title(csv_file)))
         df = pd.DataFrame(columns=structure)
     return df
 
@@ -70,6 +62,8 @@ os.chdir(path)
 
 namelog = 'poc_globant'
 
+execute_as_buckUp = False
+
 inic_logger(path, namelog)
 
 # Define the data dictionary rules for the tables
@@ -88,7 +82,6 @@ filtered_files = [file for file in files if '_mysql' not in file]
 #Reading and managing the data
 logging.info("Reading the data")
 for name in filtered_files:
-    print(name)
     required_fields = data_dict[title(name)]
     if title(name) == 'jobs':
         jobs = validate_data(name, required_fields)
@@ -108,6 +101,8 @@ BATCH_SIZE = 1000
 #Loading data to mysql
 for name in glob.glob(path + '/*_mysql.csv'):
     table_name = title(name)[:-6]
+    required_fields = data_dict[table_name]
+    cadena = ', '.join(required_fields)
     try:
         for chunk in pd.read_csv(name, chunksize=BATCH_SIZE):
             engine = create_engine(DATABASE_URL)
@@ -116,7 +111,15 @@ for name in glob.glob(path + '/*_mysql.csv'):
             #To close sql alchemy connection
             engine.dispose()
     except:
-        print_e("Failed to load data for table {}". format(table_name))
+        logger.error("Failed to load data for table {}". format(table_name))
+        
+# generating a back up of each table
+for name in filtered_files:
+    engine = create_engine(DATABASE_URL)
+    query = f"select * FROM {table_name};"
+    df = pd.read_sql(query, engine)
+    csv_path = os.path.join(path,title(name) + '_backup.csv')
+    df.to_csv(csv_path, index=False)
 
 
  

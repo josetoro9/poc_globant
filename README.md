@@ -1,4 +1,4 @@
-# Globant PoC
+# Globant PoC challenge #1
 
 This code is a Python script that reads CSV files, validates the data in them, transforms it to MySQL format, and loads it into a MySQL database. It also generates backups of the tables.
 

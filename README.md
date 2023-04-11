@@ -9,6 +9,7 @@ This code is a Python script that reads CSV files, validates the data in them, t
 - sqlalchemy
 - glob
 - csv
+- fastavro
 
 ## How to use
 1. Install the dependencies listed above.
@@ -19,9 +20,9 @@ This code is a Python script that reads CSV files, validates the data in them, t
 6. Set the _'execute_as_buckUp'_ variable to **True** or **False**, depending on whether you want to execute a normal load or a backup.
 7. Run the script.
 
-If you set _'execute_as_buckUp'_ to  **False**, the script will read the CSV files in the directory, validate the data, transform it to MySQL format, and load it into the MySQL database. It will also generate backups of each table.
+If you set _'execute_as_buckUp'_ to  **False**, the script will read the **CSV** files in the directory, validate the data, transform it to MySQL format, and load it into the MySQL database. It will also generate backups of each table.
 
-If you set execute_as_buckUp to True, the script will load the backups of each table into the MySQL database.
+If you set execute_as_buckUp to True, the script will load the backups in **AVRO** files of each table into the MySQL database.
 
 ## Functionality
 The script has the following functionality:
@@ -30,7 +31,7 @@ The script has the following functionality:
 - Validates the data in each file against a data dictionary.
 - Transforms the data to MySQL format.
 - Loads the data into a MySQL database.
-- Generates backups of each table.
+- Generates backups of each table (**AVRO**).
 
 ## Example usage
 Suppose you have a MySQL database running on _**'127.0.0.1'**_ with the username _'root'_ and password _'passcode'_, and you have the following CSV files in the same directory as the script:

@@ -48,7 +48,7 @@ def mysql_data(df,name,required_fields,situation = None):
         text = '_mysql.csv'
     else:
         text = '_backup.csv'
-    cadena = ', '.join(required_fields)
+    cadena = ','.join(required_fields)
     # Transforming data for MySQL format
     df_mysql = df.applymap(lambda x: f'"{x}"' if type(x) == str and '"' in x else x)
     data = df_mysql.to_csv(index=False, header=False, quotechar='"', quoting=csv.QUOTE_NONNUMERIC, encoding='utf-8')
@@ -61,16 +61,16 @@ path = os.path.dirname(os.path.abspath(__file__))
 os.chdir(path)
 namelog = 'poc_globant'
 
-execute_as_buckUp = True
+execute_as_buckUp = False
 # in case there are files that you dont want to reload from the buckup
 archivos_a_eliminar = ['hired_employees', 'jobs'] 
 
 inic_logger(path, namelog)
 # Define the data dictionary rules for the tables
 data_dict = {
-    'jobs': ['id', 'job'],
-    'hired_employees': ['id', 'name','datetime','department_id','job_id'],
-    'departments': ['id', 'department']
+    'jobs': ['id','job'],
+    'hired_employees': ['id','name','datetime','department_id','job_id'],
+    'departments': ['id','department']
 }
 DATABASE_URL = 'mysql+pymysql://root:passcode@127.0.0.1/mydatabase'
 files = glob.glob(path + '/*.csv')
@@ -152,7 +152,7 @@ if execute_as_buckUp == False:
 else:
     logger.info("BACKUP execution")
     avrofiles = glob.glob(path + '/*.avro')
-    # Remove elements from the original list.
+    # Eliminar elementos de la lista original
     for archivo in archivos_a_eliminar:
         avrofiles.remove(os.path.join(path, archivo + '.avro'))
     for name in avrofiles:
@@ -163,10 +163,10 @@ else:
         engine.execute(query)
         required_fields = data_dict[table_name]
         cadena = ', '.join(required_fields)
-        # Open the Avro file and create the Reader object.
+        # Abre el archivo Avro y crea el objeto Reader
         with open(table_name + '.avro', 'rb') as avro_file:
             reader = fastavro.reader(avro_file)
-            # The backup data is iterated
+            # Itera sobre los datos recuperados
             rows = []
             for record in reader:
                 rows.append(record)

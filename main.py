@@ -152,7 +152,7 @@ if execute_as_buckUp == False:
 else:
     logger.info("BACKUP execution")
     avrofiles = glob.glob(path + '/*.avro')
-    # Eliminar elementos de la lista original
+    # Remove elements from the original list.
     for archivo in archivos_a_eliminar:
         avrofiles.remove(os.path.join(path, archivo + '.avro'))
     for name in avrofiles:
@@ -163,10 +163,10 @@ else:
         engine.execute(query)
         required_fields = data_dict[table_name]
         cadena = ', '.join(required_fields)
-        # Abre el archivo Avro y crea el objeto Reader
+        # Open the Avro file and create the Reader object.
         with open(table_name + '.avro', 'rb') as avro_file:
             reader = fastavro.reader(avro_file)
-            # Itera sobre los datos recuperados
+            # The backup data is iterated
             rows = []
             for record in reader:
                 rows.append(record)

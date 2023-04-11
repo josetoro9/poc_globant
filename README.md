@@ -1,6 +1,14 @@
 # POC Globant
 This code is a Python script that performs the following actions:
 
+```python
+import pandas as pd
+import os
+import logging
+from sqlalchemy import create_engine
+import glob
+import csv```
+
 Defines a function to initialize a logger.
 Defines a function to extract the title of a CSV file.
 Defines a function to validate data in a CSV file.
